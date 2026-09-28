@@ -1,3 +1,4 @@
+from pydoc import text
 import asyncio, csv, re, sys, time, threading, tkinter as tk
 from tkinter import filedialog, scrolledtext
 from pathlib import Path
@@ -40,9 +41,9 @@ async def process_folder(folder_path, log_callback, done_callback):
                     text = " ".join([l.text for l in (await winocr.recognize_pil(preprocess_for_ocr(crop_img, base_angle+tilt), "en-US")).lines]).strip()
                     
                     # Regex baru yang mendeteksi 16 digit (awalan 35) atau persis 8 digit
-                    match = re.search(r'(?<!\d)(35\d{14}|\d{8})(?!\d)', text.replace('O','0').replace('o','0').replace('I','1').replace('l','1').replace('S','5').replace(' ','').replace('-',''))
+                    match = re.search(r'35\d{14}|(?<!\d)\d{8}(?!\d)', text.replace('O','0').replace('o','0').replace('I','1').replace('l','1').replace('S','5').replace(' ','').replace('-',''))
                     if match:
-                        new_name, is_found = match.group(1), True; break
+                        new_name, is_found = match.group(0), True; break
 
             if new_name:
                 cand, c = folder / f"{new_name}{filepath.suffix.lower()}", 1
