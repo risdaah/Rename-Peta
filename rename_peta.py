@@ -1,4 +1,3 @@
-from pydoc import text
 import asyncio, csv, re, sys, time, threading, tkinter as tk
 from tkinter import filedialog, scrolledtext
 from pathlib import Path
@@ -26,8 +25,13 @@ async def process_folder(folder_path, log_callback, done_callback):
 
     log_callback(f"Memulai pemindaian {len(files)} file...\n" + "-"*40)
     start_time = time.time()
-    scenarios = [("Kanan Atas", (0.65, 0.01, 0.98, 0.12), 0), ("Kanan Bawah", (0.85, 0.50, 1.00, 1.00), 90),
-                 ("Kiri Atas", (0.01, 0.01, 0.15, 0.50), -90), ("Kiri Bawah", (0.01, 0.85, 0.40, 1.00), 180)]
+    
+    scenarios = [
+        ("Kanan Atas", (0.65, 0.01, 0.98, 0.12), 0), 
+        ("Kanan Bawah", (0.85, 0.50, 1.00, 1.00), 90),
+        ("Kiri Atas", (0.01, 0.01, 0.15, 0.50), -90), 
+        ("Kiri Bawah", (0.01, 0.85, 0.40, 1.00), 180)
+    ]
 
     for idx, filepath in enumerate(files, 1):
         try:
@@ -40,8 +44,8 @@ async def process_folder(folder_path, log_callback, done_callback):
                 for tilt in TILT_ANGLES:
                     text = " ".join([l.text for l in (await winocr.recognize_pil(preprocess_for_ocr(crop_img, base_angle+tilt), "en-US")).lines]).strip()
                     
-                    # Regex baru yang mendeteksi 16 digit (awalan 35) atau persis 8 digit
-                    match = re.search(r'35\d{14}|(?<!\d)\d{8}(?!\d)', text.replace('O','0').replace('o','0').replace('I','1').replace('l','1').replace('S','5').replace(' ','').replace('-',''))
+                    # HANYA MENDETEKSI 16 DIGIT & 10 DIGIT (Keduanya berawalan 35)
+                    match = re.search(r'35\d{14}|35\d{8}', text.replace('O','0').replace('o','0').replace('I','1').replace('l','1').replace('S','5').replace(' ','').replace('-',''))
                     if match:
                         new_name, is_found = match.group(0), True; break
 
