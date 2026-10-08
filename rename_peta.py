@@ -47,11 +47,15 @@ async def process_folder(folder_path, log_callback, done_callback):
                     # HANYA MENDETEKSI 16 DIGIT & 10 DIGIT (Keduanya berawalan 35)
                     match = re.search(r'35\d{14}|35\d{8}', text.replace('O','0').replace('o','0').replace('I','1').replace('l','1').replace('S','5').replace(' ','').replace('-',''))
                     if match:
-                        new_name, is_found = match.group(0), True; break
+                        # Diberi imbuhan _WSS di akhir kode angka
+                        new_name = f"{match.group(0)}_WSS"
+                        is_found = True
+                        break
 
             if new_name:
                 cand, c = folder / f"{new_name}{filepath.suffix.lower()}", 1
-                while cand.exists(): cand, c = folder / f"{new_name}_{c}{filepath.suffix.lower()}", c + 1
+                while cand.exists(): 
+                    cand, c = folder / f"{new_name}_{c}{filepath.suffix.lower()}", c + 1
                 filepath.rename(cand)
                 success_count += 1
                 log_callback(f"[{idx}/{len(files)}] {filepath.name} ➔ {cand.name}")
